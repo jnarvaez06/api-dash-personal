@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -20,6 +21,7 @@ class AuthController extends Controller
         
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
+                'success' => false,
                 'message' => 'Invalid credentials',
             ], 401);
         }
@@ -27,8 +29,12 @@ class AuthController extends Controller
         $token = $user->createToken('auth-token')->plainTextToken;
         
         return response()->json([
-            'token' => $token,
-            'user' => new UserResource($user),
+            'success' => true,
+            'message' => 'Login successful',
+            'data' => [
+                'token' => $token,
+                'user' => new UserResource($user),
+            ],
         ]);
     }
 
@@ -44,9 +50,34 @@ class AuthController extends Controller
         $token = $user->createToken('auth-token')->plainTextToken;
         
         return response()->json([
+            'success' => true,
             'message' => 'User registered successfully',
-            'token' => $token,
-            'user' => new UserResource($user),
+            'data' => [
+                'token' => $token,
+                'user' => new UserResource($user),
+            ],
         ], 201);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Logged out successfully',
+            'data' => null,
+        ]);
+    }
+
+    public function me(Request $request)
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'User retrieved successfully',
+            'data' => [
+                'user' => new UserResource($request->user()),
+            ],
+        ]);
     }
 }
