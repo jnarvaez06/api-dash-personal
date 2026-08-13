@@ -72,11 +72,13 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
+        $user = $request->user()->load('profile');
+        
         return response()->json([
             'success' => true,
             'message' => 'User retrieved successfully',
             'data' => [
-                'user' => new UserResource($request->user()),
+                'user' => new UserResource($user),
             ],
         ]);
     }
