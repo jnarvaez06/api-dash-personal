@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\UpdateProfileRequest;
 use App\Http\Resources\UserResource;
@@ -122,6 +123,23 @@ class AuthController extends Controller
             'data' => [
                 'user' => new UserResource($user),
             ],
+        ]);
+    }
+
+    public function changePassword(ChangePasswordRequest $request)
+    {
+        $user = $request->user();
+        
+        $user->update([
+            'password' => $request->new_password,
+        ]);
+
+        $user->tokens()->delete();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Password changed successfully, please login again',
+            'data' => null,
         ]);
     }
 }
