@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\UpdateProfileRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -40,6 +42,8 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request)
     {
+        DB::beginTransaction();
+        
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -47,8 +51,15 @@ class AuthController extends Controller
             'is_active' => true,
         ]);
         
+        $user->profile()->create([
+            'country' => $request->country ?? 'CO',
+            'currency' => $request->currency ?? 'COP',
+        ]);
+        
         $token = $user->createToken('auth-token')->plainTextToken;
         
+        DB::commit();
+
         return response()->json([
             'success' => true,
             'message' => 'User registered successfully',
@@ -77,6 +88,37 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'User retrieved successfully',
+            'data' => [
+                'user' => new UserResource($user),
+            ],
+        ]);
+    }
+
+    public function updateMe(UpdateProfileRequest $request)
+    {
+        $user = $request->user();
+
+        DB::transaction(function () use ($user, $request) {
+        
+            $userData = $request->safe()->only(['name', 'email']);
+
+            $profileData = $request->safe()->only(['country', 'currency']);
+            
+            if (!empty($userData)) {
+                $user->update($userData);
+            }
+            
+            if (!empty($profileData)) {
+                $user->profile()->update($profileData);
+            }
+        
+        });
+
+        $user->load('profile');
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'User updated successfully',
             'data' => [
                 'user' => new UserResource($user),
             ],
