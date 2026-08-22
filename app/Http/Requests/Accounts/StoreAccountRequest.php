@@ -31,4 +31,22 @@ class StoreAccountRequest extends FormRequest
             'is_active' => 'boolean',
         ];
     }
+
+    /**
+     * Get the descriptions/examples of the request's body parameters for API docs.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public function bodyParameters(): array
+    {
+        return [
+            'name' => ['description' => 'Nombre de la cuenta.', 'example' => 'Cuenta de ahorros'],
+            'type' => [
+                'description' => 'Tipo de cuenta. Valores válidos: '.implode(', ', array_column(AccountType::cases(), 'value')).'.',
+                'example' => 'bank_account',
+            ],
+            'initial_balance' => ['description' => 'Saldo inicial de la cuenta.', 'example' => 1500000],
+            'is_active' => ['description' => 'Si la cuenta está activa. Opcional, default `true`.', 'example' => true],
+        ];
+    }
 }

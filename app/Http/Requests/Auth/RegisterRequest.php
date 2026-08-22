@@ -30,4 +30,21 @@ class RegisterRequest extends FormRequest
             'currency' => 'nullable|string|max:3',
         ];
     }
+
+    /**
+     * Get the descriptions/examples of the request's body parameters for API docs.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public function bodyParameters(): array
+    {
+        return [
+            'name' => ['description' => 'Nombre completo del usuario.', 'example' => 'Juan Pérez'],
+            'email' => ['description' => 'Correo único del usuario.', 'example' => 'juan@example.com'],
+            'password' => ['description' => 'Contraseña, mínimo 8 caracteres.', 'example' => 'password123'],
+            'password_confirmation' => ['description' => 'Confirmación de la contraseña (debe coincidir con `password`).', 'example' => 'password123'],
+            'country' => ['description' => 'Código de país ISO de 2 letras. Opcional, default `CO`.', 'example' => 'CO'],
+            'currency' => ['description' => 'Código de moneda ISO de 3 letras. Opcional, default `COP`.', 'example' => 'COP'],
+        ];
+    }
 }

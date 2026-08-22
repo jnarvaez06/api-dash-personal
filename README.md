@@ -7,6 +7,23 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Documentación de la API
+
+La documentación de la API se genera con [Scribe](https://scribe.knuckles.wtf/).
+
+1. Levanta el proyecto (Laravel Herd: http://dashpersonal.test).
+2. Genera/actualiza la documentación:
+   ```bash
+   php artisan scribe:generate
+   ```
+3. Ábrela en `http://dashpersonal.test/docs/index.html` (con Herd, la nginx local no sirve `index.html` automáticamente en `/docs/`, hay que incluirlo en la URL).
+
+También se generan automáticamente:
+- Colección Postman: `public/docs/collection.json`
+- Spec OpenAPI: `public/docs/openapi.yaml`
+
+Regenera la documentación cada vez que agregues o modifiques un endpoint, Form Request o Resource. Los archivos generados no se versionan (ver `.gitignore`).
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

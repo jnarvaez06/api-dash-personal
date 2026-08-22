@@ -27,4 +27,18 @@ class ChangePasswordRequest extends FormRequest
             'new_password' => 'required|string|min:8|confirmed|different:current_password',
         ];
     }
+
+    /**
+     * Get the descriptions/examples of the request's body parameters for API docs.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public function bodyParameters(): array
+    {
+        return [
+            'current_password' => ['description' => 'Contraseña actual del usuario.', 'example' => 'oldpassword123'],
+            'new_password' => ['description' => 'Nueva contraseña, mínimo 8 caracteres y diferente de la actual.', 'example' => 'newpassword456'],
+            'new_password_confirmation' => ['description' => 'Confirmación de la nueva contraseña.', 'example' => 'newpassword456'],
+        ];
+    }
 }
