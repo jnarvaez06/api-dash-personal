@@ -8,6 +8,7 @@ use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\UpdateProfileRequest;
 use App\Http\Resources\UserResource;
+use App\Models\Category;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -103,7 +104,11 @@ class AuthController extends Controller
             'country' => $request->country ?? 'CO',
             'currency' => $request->currency ?? 'COP',
         ]);
-        
+
+        $user->categories()->createMany(
+            array_map(fn (string $name) => ['name' => $name], Category::DEFAULT_NAMES)
+        );
+
         $token = $user->createToken('auth-token')->plainTextToken;
         
         DB::commit();
