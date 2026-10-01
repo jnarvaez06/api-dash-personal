@@ -18,7 +18,7 @@ class MovementResource extends JsonResource
             'id' => $this->id,
             'account_id' => $this->account_id,
             'category_id' => $this->category_id,
-            'related_movement_id' => $this->related_movement_id,
+            'transfer_id' => $this->transfer_id,
             'description' => $this->description,
             'amount' => $this->amount,
             'date' => $this->date,

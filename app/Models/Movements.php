@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'amount',
     'date',
     'type',
-    'related_movement_id',
+    'transfer_id',
     'is_transfer',
 ])]
 class Movements extends Model
@@ -33,11 +33,6 @@ class Movements extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
-    }
-
-    public function relatedMovement(): BelongsTo
-    {
-        return $this->belongsTo(Movements::class, 'related_movement_id');
     }
 
     protected function casts(): array

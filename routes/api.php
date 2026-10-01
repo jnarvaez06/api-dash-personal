@@ -22,5 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('movements', MovementController::class);
     Route::post('transfers', [TransferController::class, 'store']);
+    Route::match(['put', 'patch'], 'transfers/{transfer}', [TransferController::class, 'update']);
+    Route::delete('transfers/{transfer}', [TransferController::class, 'destroy']);
 
 });
