@@ -25,6 +25,13 @@ class UpdateMovementRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'account_id' => [
+                'sometimes',
+                'required',
+                Rule::exists('accounts', 'id')
+                    ->where('user_id', $this->user()?->id)
+                    ->where('is_active', true),
+            ],
             'category_id' => [
                 'sometimes',
                 'required',
@@ -62,6 +69,7 @@ class UpdateMovementRequest extends FormRequest
     public function bodyParameters(): array
     {
         return [
+            'account_id' => ['description' => 'Id de una cuenta activa propia del usuario autenticado. Opcional.', 'example' => 1],
             'category_id' => ['description' => 'Id de una categoría propia del usuario autenticado. Opcional.', 'example' => 1],
             'description' => ['description' => 'Descripción del movimiento. Opcional.', 'example' => 'Compra en el supermercado'],
             'amount' => ['description' => 'Monto del movimiento. Opcional.', 'example' => 150000],

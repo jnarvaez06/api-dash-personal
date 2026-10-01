@@ -21,11 +21,14 @@ class MovementController extends Controller
         'data' => [
             'data' => [[
                 'id' => 1,
+                'account_id' => 1,
                 'category_id' => 1,
+                'related_movement_id' => null,
                 'description' => 'Compra en el supermercado',
                 'amount' => '150000.00',
                 'date' => '2026-08-20',
                 'type' => 'expense',
+                'is_transfer' => false,
                 'created_at' => '2026-08-20T10:00:00.000000Z',
                 'updated_at' => '2026-08-20T10:00:00.000000Z',
             ]],
@@ -71,11 +74,14 @@ class MovementController extends Controller
         'message' => 'Movement created successfully.',
         'data' => [
             'id' => 1,
+            'account_id' => 1,
             'category_id' => 1,
+            'related_movement_id' => null,
             'description' => 'Compra en el supermercado',
             'amount' => '150000.00',
             'date' => '2026-08-20',
             'type' => 'expense',
+            'is_transfer' => false,
             'created_at' => '2026-08-20T10:00:00.000000Z',
             'updated_at' => '2026-08-20T10:00:00.000000Z',
         ],
@@ -85,7 +91,7 @@ class MovementController extends Controller
         'message' => 'The given data was invalid.',
         'data' => null,
         'errors' => ['category_id' => ['The selected category id is invalid.']],
-    ], description: 'Error de validación (incluye intentar usar una categoría que no pertenece al usuario).')]
+    ], description: 'Error de validación (incluye usar una cuenta o categoría que no pertenece al usuario).')]
     public function store(StoreMovementRequest $request)
     {
         $movement = $request->user()->movements()->create($request->validated());
@@ -103,11 +109,14 @@ class MovementController extends Controller
         'message' => 'Movement retrieved successfully.',
         'data' => [
             'id' => 1,
+            'account_id' => 1,
             'category_id' => 1,
+            'related_movement_id' => null,
             'description' => 'Compra en el supermercado',
             'amount' => '150000.00',
             'date' => '2026-08-20',
             'type' => 'expense',
+            'is_transfer' => false,
             'created_at' => '2026-08-20T10:00:00.000000Z',
             'updated_at' => '2026-08-20T10:00:00.000000Z',
         ],
@@ -134,11 +143,14 @@ class MovementController extends Controller
         'message' => 'Movement updated successfully.',
         'data' => [
             'id' => 1,
+            'account_id' => 1,
             'category_id' => 1,
+            'related_movement_id' => null,
             'description' => 'Compra en el supermercado (actualizada)',
             'amount' => '160000.00',
             'date' => '2026-08-20',
             'type' => 'expense',
+            'is_transfer' => false,
             'created_at' => '2026-08-20T10:00:00.000000Z',
             'updated_at' => '2026-08-21T09:30:00.000000Z',
         ],
@@ -148,6 +160,11 @@ class MovementController extends Controller
         'message' => 'Resource not found.',
         'data' => null,
     ], description: 'El movimiento no existe o no pertenece al usuario autenticado.')]
+    #[Response(status: 409, content: [
+        'success' => false,
+        'message' => 'Transfer movements cannot be modified directly.',
+        'data' => null,
+    ], description: 'El movimiento fue creado por una transferencia (is_transfer=true) y no puede editarse por este endpoint.')]
     #[Response(status: 422, content: [
         'success' => false,
         'message' => 'The given data was invalid.',
@@ -157,6 +174,15 @@ class MovementController extends Controller
     public function update(UpdateMovementRequest $request, int $movement)
     {
         $movement = $request->user()->movements()->findOrFail($movement);
+
+        if ($movement->is_transfer) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Transfer movements cannot be modified directly.',
+                'data' => null,
+            ], 409);
+        }
+
         $movement->update($request->validated());
 
         return response()->json([
@@ -177,9 +203,23 @@ class MovementController extends Controller
         'message' => 'Resource not found.',
         'data' => null,
     ], description: 'El movimiento no existe o no pertenece al usuario autenticado.')]
+    #[Response(status: 409, content: [
+        'success' => false,
+        'message' => 'Transfer movements cannot be deleted directly.',
+        'data' => null,
+    ], description: 'El movimiento fue creado por una transferencia (is_transfer=true) y no puede borrarse por este endpoint.')]
     public function destroy(Request $request, int $movement)
     {
         $movement = $request->user()->movements()->findOrFail($movement);
+
+        if ($movement->is_transfer) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Transfer movements cannot be deleted directly.',
+                'data' => null,
+            ], 409);
+        }
+
         $movement->delete();
 
         return response()->json([

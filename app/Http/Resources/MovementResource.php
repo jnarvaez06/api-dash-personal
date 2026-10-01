@@ -16,11 +16,14 @@ class MovementResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'account_id' => $this->account_id,
             'category_id' => $this->category_id,
+            'related_movement_id' => $this->related_movement_id,
             'description' => $this->description,
             'amount' => $this->amount,
             'date' => $this->date,
             'type' => $this->type,
+            'is_transfer' => $this->is_transfer,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

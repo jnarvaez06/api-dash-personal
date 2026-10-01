@@ -25,6 +25,12 @@ class StoreMovementRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'account_id' => [
+                'required',
+                Rule::exists('accounts', 'id')
+                    ->where('user_id', $this->user()?->id)
+                    ->where('is_active', true),
+            ],
             'category_id' => [
                 'required',
                 Rule::exists('categories', 'id')->where('user_id', $this->user()?->id),
@@ -44,6 +50,7 @@ class StoreMovementRequest extends FormRequest
     public function bodyParameters(): array
     {
         return [
+            'account_id' => ['description' => 'Id de una cuenta activa propia del usuario autenticado.', 'example' => 1],
             'category_id' => ['description' => 'Id de una categoría propia del usuario autenticado.', 'example' => 1],
             'description' => ['description' => 'Descripción del movimiento.', 'example' => 'Compra en el supermercado'],
             'amount' => ['description' => 'Monto del movimiento.', 'example' => 150000],
