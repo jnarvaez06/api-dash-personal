@@ -15,6 +15,7 @@ use Laravel\Sanctum\HasApiTokens;
 use App\Models\Profile;
 use App\Models\Account;
 use App\Models\Category;
+use App\Models\Movements;
 
 #[Fillable(['name', 'email', 'password', 'is_active'])]
 #[Hidden(['password', 'remember_token'])]
@@ -50,5 +51,10 @@ class User extends Authenticatable
     public function categories(): HasMany
     {
         return $this->hasMany(Category::class);
+    }
+
+    public function movements(): HasMany
+    {
+        return $this->hasMany(Movements::class);
     }
 }
